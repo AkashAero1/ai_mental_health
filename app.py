@@ -3,7 +3,6 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.schema import HumanMessage
 from mood_utils import detect_mood
 from prompts import get_prompt
-from voice_util import record_voice_input, speak_text
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -32,21 +31,10 @@ st.markdown('''Welcome to your anonymous AI support companion.
 Type or speak your thoughts below.'''
 )
 
-mode = st.radio("Choose your input mode:", ["Text", "Voice"])
 
-user_input = ""
-input_ready = False
+user_input = st.text_area("What's on your mind?", height=150)
+input_ready = st.button("Analyze and Chat")
 
-if mode == "Text":
-    user_input = st.text_area("What's on your mind?", height=150)
-    input_ready = st.button("Analyze and Chat")
-
-elif mode == "Voice":
-    if st.button("🎙️ Start Listening"):
-        with st.spinner("Listening... please speak"):
-            user_input = record_voice_input()
-        st.success(f"You said: {user_input}")
-        input_ready = True
 
 if input_ready and user_input.strip():
     with st.spinner("Analyzing mood and generating a response..."):
@@ -59,8 +47,6 @@ if input_ready and user_input.strip():
         st.markdown("### AI Response:")
         st.success(response.content)
 
-        if mode == "Voice":
-            speak_text(response.content)
 
 elif input_ready and not user_input.strip():
     st.warning("Please provide some input.")
